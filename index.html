@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Aventuras</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Contenedor para el juego -->
+    <div id="game-container"></div>
+
+    <div id="menuPrincipal">
+        <h1>Bienvenido al Simulador de Aventuras</h1>
+        <p id="monedas">Tenés 100 monedas en tu inventario</p>
+        <button id="btnTienda">Ir a la tienda</button>
+        <button id="btnMazmorra">Ir a la mazmorra</button>
+        <button id="btnEntrenar">Ir a entrenar</button>
+        <button id="btnEsperar">Esperar al otro día</button>
+    </div>
+
+    <div id="menuTienda" style="display: none;">
+        <h1>Tienda</h1>
+        <button id="btnComprarVida">Comprar vida</button>
+        <button id="btnComprarArmamento">Comprar armamento</button>
+        <button id="btnComprarComidaDragon">Comprar comida para el dragón</button>
+        <button id="btnSalirTienda">Salir de la tienda</button>
+    </div>
+
+    <div id="menuMazmorra" style="display: none;">
+        <h1>Mazmorra</h1>
+        <button id="btnExplorarHabitacion">Explorar la habitación</button>
+        <button id="btnVerInventario">Ver inventario</button>
+        <button id="btnSalirMazmorra">Salir de la mazmorra</button>
+        <p id="inventarioCaballero"></p>
+    </div>
+
+    <div id="menuEntrenar" style="display: none;">
+        <h1>Entrenar</h1>
+        <button id="btnEntrenarFuerza">Entrenar fuerza</button>
+        <button id="btnEntrenarVelocidad">Entrenar velocidad</button>
+        <button id="btnSalirEntrenar">Salir del entrenamiento</button>
+    </div>
+
+
+    <div id="menuBatalla" style="display: none;">
+        <h1>Batalla</h1>
+        <p>Tu vida: <span id="vidaCaballero"></span></p>
+        <p>Vida del Enemigo: <span id="vidaEnemigo"></span></p>
+        <button id="btnAtacar">Atacar</button>
+        <button id="btnAtaqueDragon">Usar Ataque de Dragón</button>
+        <button id="btnHabilidad">Usar Habilidad Especial</button>
+        <button id="btnHuir">Huir</button>
+    </div>
+    <div id="mensajeContainer"></div>
+    <script src="main.js"></script>
+</body>
+</html>
