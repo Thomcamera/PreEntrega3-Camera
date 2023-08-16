@@ -195,10 +195,10 @@ actualizarMonedas();
 
 /// Definir enemigos con atributos
 let enemigos = [
-    { nombre: "Orco", fuerza: 20, velocidad: 5, vida: 40, vidaInicial: 40 },
-    { nombre: "Vampiro", fuerza: 25, velocidad: 10, vida: 30, vidaInicial: 40 },
-    { nombre: "Dragon", fuerza: 30, velocidad: 8, vida: 60, vidaInicial: 40 },
-    { nombre: "Hechizero", fuerza: 15, velocidad: 12, vida: 25, vidaInicial: 40 }
+    { nombre: "Orco", fuerza: 40, velocidad: 4, vida: 40, vidaInicial: 40 },
+    { nombre: "Vampiro", fuerza: 25, velocidad: 10, vida: 30, vidaInicial: 30 },
+    { nombre: "Dragon", fuerza: 30, velocidad: 8, vida: 60, vidaInicial: 60 },
+    { nombre: "Hechizero", fuerza: 15, velocidad: 12, vida: 25, vidaInicial: 25 }
 ];
 
 // Variable para controlar el turno del jugador
@@ -314,7 +314,7 @@ function mostrarMenuBatalla(enemigo) {
 // Función para que el dragón ataque al enemigo
 function usarAtaqueDragon() {
     enemigoActual.vida -= 30;
-    caballero.comidaDragon -= 2;
+    caballero.comidaDragon -= 6;
     
     if (enemigoActual.vida <= 0) {
         mostrarMensaje("¡Ganaste la batalla!");
