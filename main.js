@@ -1,4 +1,4 @@
-// Definición de las variables del juego
+// Definición de las variables del caballero
 let caballero = {
     monedas: 100,
     vida: 100,
@@ -94,8 +94,8 @@ function comprarArmamento() {
 
 // Función para comprar comida para el dragón
 function comprarComidaDragon() {
-    if (caballero.monedas >= 15) {
-        caballero.monedas -= 15;
+    if (caballero.monedas >= 20) {
+        caballero.monedas -= 20;
         caballero.comidaDragon += 5;
         actualizarMonedas();
         mostrarMensaje("Has comprado comida para tu dragón. Ahora tienes " + caballero.comidaDragon + " unidades de comida. Te quedan " + caballero.monedas + " monedas.");
@@ -105,13 +105,12 @@ function comprarComidaDragon() {
 }
 
 
-// Función para mostrar el inventario del caballero
 function verInventario() {
-    const inventario = "Inventario del caballero:\n" +
-        "Vida: " + caballero.vida + "\n" +
-        "Armamento: " + caballero.armamento + "\n" +
+    const inventario = "Inventario del caballero:<br>" +
+        "Vida: " + caballero.vida + "<br>" +
+        "Armamento: " + caballero.armamento + "<br>" +
         "Comida para el dragón: " + caballero.comidaDragon;
-    document.getElementById("inventarioCaballero").textContent = inventario;
+    document.getElementById("inventarioCaballero").innerHTML = inventario;
 }
 
 
@@ -119,7 +118,7 @@ function verInventario() {
 function entrenarFuerza() {
     if (caballero.monedas >= 30) {
         caballero.monedas -= 30;
-        caballero.fuerza += 10;
+        caballero.fuerza += 1;
         actualizarMonedas();
         mostrarMensaje("Has entrenado tu fuerza. Ahora tienes " + caballero.fuerza + " puntos de fuerza.");
     } else {
@@ -131,7 +130,7 @@ function entrenarFuerza() {
 function entrenarVelocidad() {
     if (caballero.monedas >= 30) {
         caballero.monedas -= 30;
-        caballero.velocidad += 10;
+        caballero.velocidad += 1;
         actualizarMonedas();
         mostrarMensaje("Has entrenado tu velocidad. Ahora tienes " + caballero.velocidad + " puntos de velocidad.");
     } else {
@@ -139,15 +138,33 @@ function entrenarVelocidad() {
     }
 }
 
-// Función para esperar al otro día
+// Lista de narrativas para esperar al otro día
+const narrativas = [
+    {texto: "La noche es larga e intensa. El frío asecha en las oscuridades del bosque. Tu dragón enciende la fogata con su aliento y duermes con él toda la noche. Pierdes 5 unidades de comida.",
+        efecto: () => {caballero.comidaDragon -= 5;}
+    },
+    {texto: "Has tenido un sueño tranquilo. Tu dragón ronca suavemente mientras descansa.",
+        efecto: () => {}
+    },
+    {texto: "Unos pequeños elfos asaltan tu campamento, tu dragón sale volando y quedas atrapado dentro de un círculo enemigo. Sacás la espada pero es más fácil patearlos. Tu dragón aparece y simplemente se recuesta sobre ellos. Ganás dos puntos de fuerza.",
+        efecto: () => {caballero.fuerza += 2;}
+    },
+    {texto: "La noche pasa sin incidentes. Despiertas sintiéndote renovado y listo para enfrentar un nuevo día.",
+        efecto: () => {}
+    }
+];
+
 function esperarAlOtroDia() {
-    // Implementa la lógica para esperar al otro día aquí
-    // Puedes mostrar mensajes y actualizar las propiedades del caballero según el tiempo que pasa
-    // Asumiremos que esperar un día restaura un poco de vida y comida del dragón, por ejemplo:
+    const narrativaIndex = Math.floor(Math.random() * narrativas.length);
+    const narrativa = narrativas[narrativaIndex];
+
+    narrativa.efecto(); 
+
     caballero.vida += 10;
-    caballero.comidaDragon += 3;
-    mostrarMensaje("Has esperado al otro día. Tu vida se ha recuperado en 10 puntos y has obtenido 3 unidades de comida para el dragón.");
+    caballero.comidaDragon -= 3;
+    mostrarMensaje(`Has esperado al otro día. ${narrativa.texto} Tu vida se ha recuperado.`);
 }
+
 
 // Asignar las funciones a los botones en el menú principal
 document.getElementById("btnTienda").addEventListener("click", mostrarMenuTienda);
