@@ -162,6 +162,9 @@ function esperarAlOtroDia() {
 
     caballero.vida += 10;
     caballero.comidaDragon -= 3;
+    if (caballero.comidaDragon < 0) {
+        caballero.comidaDragon = 0;
+    }
     mostrarMensaje(`Has esperado al otro día. ${narrativa.texto} Tu vida se ha recuperado.`);
 }
 
@@ -210,97 +213,44 @@ function iniciarBatalla() {
     for (let enemigo of enemigos) {
         enemigo.vida = enemigo.vidaInicial;
     }
-    mostrarMensaje("¡Has encontrado un " + enemigoActual.nombre + " enemigo! ¿Qué deseas hacer?");
+    alert("¡Has encontrado un " + enemigoActual.nombre + " enemigo! ¿Qué deseas hacer?");
     mostrarAccionesBatalla(enemigoActual);
 }
 
 
+// Función para realizar un ataque
 function atacar(turnoJugador) {
     let atacante = turnoJugador ? caballero : enemigoActual;
     let defensor = turnoJugador ? enemigoActual : caballero;
 
-    let ataquePrimero = (turnoJugador && caballero.velocidad >= enemigoActual.velocidad) ||
-                        (!turnoJugador && enemigoActual.velocidad > caballero.velocidad);
+    defensor.vida -= atacante.fuerza;
 
-    // Realizar el ataque según el orden determinado
-    if (ataquePrimero) {
-        defensor.vida -= atacante.fuerza;
-        if (defensor.vida <= 0) {
-            // Ganó el jugador o el enemigo
-            if (turnoJugador) {
-                mostrarMensaje("¡Ganaste la batalla!");
-                volverAMenuMazmorra();
-            } else {
-                mostrarMensaje("¡Perdiste la batalla!");
-                volverAMenuMazmorra();
-            }
+    if (defensor.vida <= 0) {
+        // Ganó el jugador o el enemigo
+        if (turnoJugador) {
+            mostrarMensaje("¡Ganaste la batalla!");
         } else {
-            if (turnoJugador) {
-                mostrarMensaje("Atacaste al enemigo.");
-                actualizarVidaEnemigo();
-                // Comprobar si el caballero ganó en velocidad
-                if (caballero.velocidad > enemigoActual.velocidad) {
-                    // El enemigo ataca automáticamente después del ataque del jugador
-                    setTimeout(function() {
-                        mostrarMensaje("El enemigo te atacó.");
-                        caballero.vida -= enemigoActual.fuerza;  // Restar vida al caballero
-                        actualizarVidaCaballero();
-                    }, 1000);
-                } else {
-                    // Turno del enemigo
-                    turnoEnemigo();
-                }
-            } else {
+            mostrarMensaje("¡Perdiste la batalla!");
+        }
+        volverAMenuMazmorra();
+    } else {
+        if (turnoJugador) {
+            mostrarMensaje("Atacaste al enemigo.");
+            actualizarVidaEnemigo();
+            // El enemigo ataca automáticamente después del ataque del jugador
+            setTimeout(function() {
                 mostrarMensaje("El enemigo te atacó.");
                 caballero.vida -= enemigoActual.fuerza;  // Restar vida al caballero
                 actualizarVidaCaballero();
-            }
-        }
-    } else {
-        // El defensor ataca primero
-        defensor.vida -= atacante.fuerza;
-        if (defensor.vida <= 0) {
-            // Ganó el jugador o el enemigo
-            if (turnoJugador) {
-                mostrarMensaje("¡Ganaste la batalla!");
-                volverAMenuMazmorra();
-            } else {
-                mostrarMensaje("¡Perdiste la batalla!");
-                volverAMenuMazmorra();
-            }
+            }, 750);
         } else {
-            if (turnoJugador) {
-                // Turno del enemigo
-                turnoEnemigo();
-            } else {
-                mostrarMensaje("Atacaste al enemigo.");
-                actualizarVidaEnemigo();
-                // Comprobar si el caballero ganó en velocidad
-                if (caballero.velocidad > enemigoActual.velocidad) {
-                    // El enemigo ataca automáticamente después del ataque del jugador
-                    setTimeout(function() {
-                        mostrarMensaje("El enemigo te atacó.");
-                        caballero.vida -= enemigoActual.fuerza;  // Restar vida al caballero
-                        actualizarVidaCaballero();
-                    }, 1000);
-                } else {
-                    // Turno del enemigo
-                    turnoEnemigo();
-                }
-            }
+            mostrarMensaje("El enemigo te atacó.");
+            caballero.vida -= enemigoActual.fuerza;  // Restar vida al caballero
+            actualizarVidaCaballero();
         }
     }
 }
-function turnoEnemigo() {
 
-    setTimeout(function() {
-        if (ataqueEnemigoPrimero) {
-            atacar(false); // Ataque del enemigo primero
-        } else {
-            mostrarMensaje("Tienes la ventaja de velocidad. ¡Es tu turno!");
-        }
-    }, 1000);
-}
 
 function mostrarMenuBatalla(enemigo) {
     document.getElementById("menuMazmorra").style.display = "none";
@@ -311,19 +261,32 @@ function mostrarMenuBatalla(enemigo) {
 }
 
 
-// Función para que el dragón ataque al enemigo
+// funcion para que dragón ataque
+let puedeAtacarDragon = true;  // 
+
 function usarAtaqueDragon() {
-    enemigoActual.vida -= 30;
-    caballero.comidaDragon -= 6;
-    
-    if (enemigoActual.vida <= 0) {
-        mostrarMensaje("¡Ganaste la batalla!");
-        volverAMenuMazmorra();
+    if (puedeAtacarDragon) {
+        if (caballero.comidaDragon >= 5) {
+            enemigoActual.vida -= 30;
+            caballero.comidaDragon -= 5;
+            if (caballero.comidaDragon < 0) {
+                caballero.comidaDragon = 0;
+            }
+            if (enemigoActual.vida <= 0) {
+                mostrarMensaje("¡Ganaste la batalla!");
+                volverAMenuMazmorra();
+            } else {
+                mostrarMensaje("El dragón atacó al enemigo.");
+                actualizarVidaEnemigo();
+                actualizarComidaDragon();
+                turnoEnemigo();
+            }
+        } else {
+            mostrarMensaje("No tienes suficiente comida para que el dragón ataque.");
+        }
+        puedeAtacarDragon = false;  
     } else {
-        mostrarMensaje("El dragón atacó al enemigo.");
-        actualizarVidaEnemigo();
-        actualizarComidaDragon();
-        turnoEnemigo();
+        mostrarMensaje("Tu dragón no puede atacar, le falta comida o ya ha atacado en este turno.");
     }
 }
 
