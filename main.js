@@ -8,7 +8,7 @@ let caballero = {
     velocidad: 10
 };
 
-// Funciones para mostrar mensajes en la interfaz
+// Funciones para mostrar mensajes
 function mostrarMensaje(mensaje) {
     const mensajeContainer = document.getElementById("mensajeContainer");
     const nuevoParrafo = document.createElement("p");
@@ -23,16 +23,43 @@ function mostrarMensaje(mensaje) {
     mensajeContainer.appendChild(nuevoParrafo);
 }
 
-// Función para actualizar la cantidad de monedas en la interfaz
+// Actualiza la cantidad de monedas
 function actualizarMonedas() {
     const cantidadMonedas = document.getElementById("monedas");
 
     if (cantidadMonedas) {
-        // Actualizar la cantidad de monedas restantes
         cantidadMonedas.textContent = "Tenés " + caballero.monedas + " monedas en tu inventario.";
     }
 }
 
+// Función game over
+function gameOver() {
+    alert("Te has quedado sin vida. Tu caballero suelta la espada al piso, mientras tu dragón sale volando, dejándote atrás. Unas hadas con gorrita te roban el inventario.");
+    const reiniciar = confirm("¿Quieres reiniciar el juego?");
+    if (reiniciar) {
+        reiniciarJuego(); // Asegúrate de tener una función para reiniciar el juego
+    } else {
+        alert("Pues te has equivocado Caballero, aquí el respawn es obligatorio.")
+        reiniciarJuego();
+    }
+}
+
+function reiniciarJuego() {
+    caballero.vida = 100;
+    caballero.comidaDragon = 5;
+    caballero.monedas = 100;
+    caballero.armamento = "Espada de acero";
+    caballero.fuerza = 10;
+
+    mostrarMenuPrincipal();
+
+    for (let enemigo of enemigos) {
+        enemigo.vida = enemigo.vidaInicial;
+    }
+
+    document.getElementById("mensajeContainer").innerHTML = "";
+    document.getElementById("inventarioCaballero").textContent = "";
+}
 
 // Función para mostrar el menú principal y ocultar los demás menús
 function mostrarMenuPrincipal() {
@@ -40,6 +67,7 @@ function mostrarMenuPrincipal() {
     document.getElementById("menuTienda").style.display = "none";
     document.getElementById("menuMazmorra").style.display = "none";
     document.getElementById("menuEntrenar").style.display = "none";
+    document.getElementById("menuBatalla").style.display = "none";
 }
 
 // Función para mostrar el menú de la tienda y ocultar los demás menús
@@ -126,7 +154,7 @@ function entrenarFuerza() {
     }
 }
 
-// Función para entrenar velocidad
+// CAMBIAR ESTA FUNCION (NO EXISTE MAS LA VELOCIDAD)
 function entrenarVelocidad() {
     if (caballero.monedas >= 30) {
         caballero.monedas -= 30;
@@ -138,19 +166,19 @@ function entrenarVelocidad() {
     }
 }
 
-// Lista de narrativas para esperar al otro día
+// NARRATIVAS - funcionan cuando se espera al otro día 
 const narrativas = [
     {texto: "La noche es larga e intensa. El frío asecha en las oscuridades del bosque. Tu dragón enciende la fogata con su aliento y duermes con él toda la noche. Pierdes 5 unidades de comida.",
-        efecto: () => {caballero.comidaDragon -= 5;}
+        efecto: () => {caballero.comidaDragon -= 5, caballero.vida += 5;}
     },
     {texto: "Has tenido un sueño tranquilo. Tu dragón ronca suavemente mientras descansa.",
-        efecto: () => {}
+        efecto: () => {caballero.comidaDragon -= 3, caballero.vida += 5;}
     },
     {texto: "Unos pequeños elfos asaltan tu campamento, tu dragón sale volando y quedas atrapado dentro de un círculo enemigo. Sacás la espada pero es más fácil patearlos. Tu dragón aparece y simplemente se recuesta sobre ellos. Ganás dos puntos de fuerza.",
-        efecto: () => {caballero.fuerza += 2;}
+        efecto: () => {caballero.fuerza += 2, caballero.comidaDragon -= 3, caballero.vida += 5;}
     },
     {texto: "La noche pasa sin incidentes. Despiertas sintiéndote renovado y listo para enfrentar un nuevo día.",
-        efecto: () => {}
+        efecto: () => {caballero.comidaDragon -= 3, caballero.vida += 5;}
     }
 ];
 
@@ -160,12 +188,10 @@ function esperarAlOtroDia() {
 
     narrativa.efecto(); 
 
-    caballero.vida += 10;
-    caballero.comidaDragon -= 3;
     if (caballero.comidaDragon < 0) {
         caballero.comidaDragon = 0;
     }
-    mostrarMensaje(`Has esperado al otro día. ${narrativa.texto} Tu vida se ha recuperado.`);
+    mostrarMensaje(`Has esperado al otro día. ${narrativa.texto} Has recuperado 5 unidades de vida.`);
 }
 
 
@@ -198,10 +224,10 @@ actualizarMonedas();
 
 /// Definir enemigos con atributos
 let enemigos = [
-    { nombre: "Orco", fuerza: 40, velocidad: 4, vida: 40, vidaInicial: 40 },
-    { nombre: "Vampiro", fuerza: 25, velocidad: 10, vida: 30, vidaInicial: 30 },
-    { nombre: "Dragon", fuerza: 30, velocidad: 8, vida: 60, vidaInicial: 60 },
-    { nombre: "Hechizero", fuerza: 15, velocidad: 12, vida: 25, vidaInicial: 25 }
+    { nombre: "Orco", fuerza: 40, vida: 30, vidaInicial: 40 },
+    { nombre: "Vampiro", fuerza: 25, vida: 40, vidaInicial: 30 },
+    { nombre: "Dragon", fuerza: 30, vida: 60, vidaInicial: 60 },
+    { nombre: "Hechizero", fuerza: 15, vida: 70, vidaInicial: 25 }
 ];
 
 // Variable para controlar el turno del jugador
@@ -215,10 +241,9 @@ function iniciarBatalla() {
     }
     alert("¡Has encontrado un " + enemigoActual.nombre + " enemigo! ¿Qué deseas hacer?");
     mostrarAccionesBatalla(enemigoActual);
+
 }
 
-
-// Función para realizar un ataque
 function atacar(turnoJugador) {
     let atacante = turnoJugador ? caballero : enemigoActual;
     let defensor = turnoJugador ? enemigoActual : caballero;
@@ -226,7 +251,6 @@ function atacar(turnoJugador) {
     defensor.vida -= atacante.fuerza;
 
     if (defensor.vida <= 0) {
-        // Ganó el jugador o el enemigo
         if (turnoJugador) {
             mostrarMensaje("¡Ganaste la batalla!");
         } else {
@@ -237,20 +261,18 @@ function atacar(turnoJugador) {
         if (turnoJugador) {
             mostrarMensaje("Atacaste al enemigo.");
             actualizarVidaEnemigo();
-            // El enemigo ataca automáticamente después del ataque del jugador
             setTimeout(function() {
                 mostrarMensaje("El enemigo te atacó.");
-                caballero.vida -= enemigoActual.fuerza;  // Restar vida al caballero
+                caballero.vida -= enemigoActual.fuerza;  
                 actualizarVidaCaballero();
             }, 750);
         } else {
             mostrarMensaje("El enemigo te atacó.");
-            caballero.vida -= enemigoActual.fuerza;  // Restar vida al caballero
+            caballero.vida -= enemigoActual.fuerza;  
             actualizarVidaCaballero();
         }
     }
 }
-
 
 function mostrarMenuBatalla(enemigo) {
     document.getElementById("menuMazmorra").style.display = "none";
@@ -303,6 +325,10 @@ function volverAMenuMazmorra() {
 
 function actualizarVidaCaballero() {
     document.getElementById("vidaCaballero").textContent = caballero.vida;
+
+    if (caballero.vida <= 0) {
+        gameOver();
+    }
 }
 
 function actualizarVidaEnemigo() {
@@ -311,8 +337,7 @@ function actualizarVidaEnemigo() {
 
 // Función para usar una habilidad contra el enemigo
 function usarHabilidad(enemigo) {
-    // Implementa la lógica para usar una habilidad contra el enemigo
-    // Puedes causar un daño especial o aplicar un efecto, por ejemplo
+   mostrarMensaje("Empezás a juntar fuerzas en posición karateka y empiezas a levitar. Te das cuenta que el enemigo te mira fijo. Te ponés nervioso, caes al piso y te lastimas la pierna. Tienes que entrenar más, o ir al psicólogo.")
 }
 
 document.getElementById("btnExplorarHabitacion").addEventListener("click", function() {
@@ -329,7 +354,7 @@ document.getElementById("btnAtaqueDragon").addEventListener("click", function() 
 });
 
 document.getElementById("btnHabilidad").addEventListener("click", function() {
-    usarHabilidadEspecial();
+    usarHabilidad();
 });
 
 document.getElementById("btnHuir").addEventListener("click", function() {
