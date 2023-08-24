@@ -5,7 +5,7 @@ let caballero = {
     armamento: "Espada de acero",
     comidaDragon: 5,
     fuerza: 10,
-    velocidad: 10
+    energia: 10
 };
 
 // Funciones para mostrar mensajes
@@ -32,6 +32,7 @@ function actualizarMonedas() {
     }
 }
 
+
 // Función game over
 function gameOver() {
     alert("Te has quedado sin vida. Tu caballero suelta la espada al piso, mientras tu dragón sale volando, dejándote atrás. Unas hadas con gorrita te roban el inventario.");
@@ -50,7 +51,7 @@ function reiniciarJuego() {
     caballero.monedas = 100;
     caballero.armamento = "Espada de acero";
     caballero.fuerza = 10;
-
+    actualizarMonedas();
     mostrarMenuPrincipal();
 
     for (let enemigo of enemigos) {
@@ -137,6 +138,7 @@ function verInventario() {
     const inventario = "Inventario del caballero:<br>" +
         "Vida: " + caballero.vida + "<br>" +
         "Armamento: " + caballero.armamento + "<br>" +
+        "Energía: " + caballero.energia + "<br>" +
         "Comida para el dragón: " + caballero.comidaDragon;
     document.getElementById("inventarioCaballero").innerHTML = inventario;
 }
@@ -154,17 +156,6 @@ function entrenarFuerza() {
     }
 }
 
-// CAMBIAR ESTA FUNCION (NO EXISTE MAS LA VELOCIDAD)
-function entrenarVelocidad() {
-    if (caballero.monedas >= 30) {
-        caballero.monedas -= 30;
-        caballero.velocidad += 1;
-        actualizarMonedas();
-        mostrarMensaje("Has entrenado tu velocidad. Ahora tienes " + caballero.velocidad + " puntos de velocidad.");
-    } else {
-        mostrarMensaje("No tienes suficientes monedas para entrenar velocidad.");
-    }
-}
 
 // NARRATIVAS - funcionan cuando se espera al otro día 
 const narrativas = [
@@ -214,7 +205,7 @@ document.getElementById("btnSalirMazmorra").addEventListener("click", mostrarMen
 
 // Asignar las funciones a los botones en el menú de entrenamiento
 document.getElementById("btnEntrenarFuerza").addEventListener("click", entrenarFuerza);
-document.getElementById("btnEntrenarVelocidad").addEventListener("click", entrenarVelocidad);
+document.getElementById("btnEntrenarEnergia").addEventListener("click", entrenarEnergia);
 document.getElementById("btnSalirEntrenar").addEventListener("click", mostrarMenuPrincipal);
 
 // Actualizar la cantidad de monedas en la interfaz al inicio del juego
@@ -335,9 +326,43 @@ function actualizarVidaEnemigo() {
     document.getElementById("vidaEnemigo").textContent = enemigoActual.vida;
 }
 
-// Función para usar una habilidad contra el enemigo
-function usarHabilidad(enemigo) {
-   mostrarMensaje("Empezás a juntar fuerzas en posición karateka y empiezas a levitar. Te das cuenta que el enemigo te mira fijo. Te ponés nervioso, caes al piso y te lastimas la pierna. Tienes que entrenar más, o ir al psicólogo.")
+function actualizarEnergia() {
+    document.getElementById("energiaCaballero").textContent = caballero.energia;
+}
+
+// Función de la Energía
+
+function entrenarEnergia() {
+    if (caballero.monedas >= 30) {
+        caballero.monedas -= 30;
+        caballero.energia += 5;
+        actualizarMonedas();
+        mostrarMensaje("Le has pedido al Mago de Toz que te enseñe un truco, saca sus cartas de su riño y te mira fijo. 'En realidad, no soy mago... pero aprendí este truco en la calle...' . Aprendes el truco a medias, aún así obtienes 5 orbes de energía.");
+    } else {
+        mostrarMensaje("No tienes suficientes monedas para pagarle al Mago de Toz.");
+    }
+}
+
+function usarHabilidad(enemigo) { 
+    if (caballero.energia >= 15) {
+        enemigo = enemigoActual;
+        caballero.energia -= 15;
+        enemigoActual.vida -= 50;
+        actualizarEnergia();
+        if (enemigoActual.vida <= 0) {
+            mostrarMensaje("El rayo a pulverizado al enemigo. Has ganado 20 monedas.")
+            volverAMenuMazmorra();
+        } else {
+            mostrarMensaje("Tus ojos cambian de color, mientras un aura recorre tu cuerpo. Observás fijo a tu oponente y atacás con un rayo láser. Has gastado 15 orbes de energía.")
+            actualizarVidaEnemigo();
+            
+        }
+    } else {
+   mostrarMensaje("Empezás a juntar fuerzas en posición karateka y empiezas a levitar. Te das cuenta que el enemigo te mira fijo. Te ponés nervioso, caes al piso y te lastimas la pierna. Tienes que conseguir más orbes de energía, o ir al psicólogo. Has perdido 5 unidades de vida.")
+    caballero.vida -= 5;
+    actualizarVidaCaballero();
+    
+}
 }
 
 document.getElementById("btnExplorarHabitacion").addEventListener("click", function() {
