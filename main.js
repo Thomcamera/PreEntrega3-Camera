@@ -35,12 +35,23 @@ function actualizarMonedas() {
 
 // Función game over
 function gameOver() {
-    alert("Te has quedado sin vida. Tu caballero suelta la espada al piso, mientras tu dragón sale volando, dejándote atrás. Unas hadas con gorrita te roban el inventario.");
     const reiniciar = confirm("¿Quieres reiniciar el juego?");
     if (reiniciar) {
         reiniciarJuego(); // Asegúrate de tener una función para reiniciar el juego
     } else {
-        alert("Pues te has equivocado Caballero, aquí el respawn es obligatorio.")
+        Swal.fire({
+            title: "Pues te has equivocado Caballero, aquí el respawn es obligatorio.",
+            width: 600,
+            padding: '3em',
+            color: 'black',
+            background: '#fff',
+            backdrop: `
+              rgba(0,0,123,0.4)
+              url("/images/nyan-cat.gif")
+              left top
+              no-repeat
+            `
+          })
         reiniciarJuego();
     }
 }
@@ -157,27 +168,33 @@ function entrenarFuerza() {
 }
 
 
-// NARRATIVAS - funcionan cuando se espera al otro día 
-const narrativas = [
-    {texto: "La noche es larga e intensa. El frío asecha en las oscuridades del bosque. Tu dragón enciende la fogata con su aliento y duermes con él toda la noche. Pierdes 5 unidades de comida.",
-        efecto: () => {caballero.comidaDragon -= 5, caballero.vida += 5;}
-    },
-    {texto: "Has tenido un sueño tranquilo. Tu dragón ronca suavemente mientras descansa.",
-        efecto: () => {caballero.comidaDragon -= 3, caballero.vida += 5;}
-    },
-    {texto: "Unos pequeños elfos asaltan tu campamento, tu dragón sale volando y quedas atrapado dentro de un círculo enemigo. Sacás la espada pero es más fácil patearlos. Tu dragón aparece y simplemente se recuesta sobre ellos. Ganás dos puntos de fuerza.",
-        efecto: () => {caballero.fuerza += 2, caballero.comidaDragon -= 3, caballero.vida += 5;}
-    },
-    {texto: "La noche pasa sin incidentes. Despiertas sintiéndote renovado y listo para enfrentar un nuevo día.",
-        efecto: () => {caballero.comidaDragon -= 3, caballero.vida += 5;}
+let narrativas = [];
+// URL del archivo JSON
+const url = 'narrativas.json';
+
+// Fetch
+fetch(url)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Error al cargar el archivo JSON.');
     }
-];
+    return response.json(); 
+  })
+  .then(data => {
+    console.log('Narrativas cargadas:', data);
+    narrativas = data;
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
 
 function esperarAlOtroDia() {
     const narrativaIndex = Math.floor(Math.random() * narrativas.length);
     const narrativa = narrativas[narrativaIndex];
 
-    narrativa.efecto(); 
+    for (const atributo in narrativa.efecto) {
+        caballero[atributo] += narrativa.efecto[atributo];
+    }
 
     if (caballero.comidaDragon < 0) {
         caballero.comidaDragon = 0;
@@ -230,7 +247,19 @@ function iniciarBatalla() {
     for (let enemigo of enemigos) {
         enemigo.vida = enemigo.vidaInicial;
     }
-    alert("¡Has encontrado un " + enemigoActual.nombre + " enemigo! ¿Qué deseas hacer?");
+    Swal.fire({
+        title: "¡Has encontrado un " + enemigoActual.nombre + " enemigo! ¿Qué deseas hacer?",
+        width: 600,
+        padding: '3em',
+        color: 'black',
+        background: '#fff',
+        backdrop: `
+          rgba(0,0,123,0.4)
+          url("/images/nyan-cat.gif")
+          left top
+          no-repeat
+        `
+      })
     mostrarAccionesBatalla(enemigoActual);
 
 }
@@ -271,6 +300,7 @@ function mostrarMenuBatalla(enemigo) {
     enemigoActual = enemigo;
     actualizarVidaCaballero();
     actualizarVidaEnemigo();
+    actualizarEnergia();
 }
 
 
@@ -286,8 +316,10 @@ function usarAtaqueDragon() {
                 caballero.comidaDragon = 0;
             }
             if (enemigoActual.vida <= 0) {
-                mostrarMensaje("¡Ganaste la batalla!");
+                mostrarMensaje("¡Ganaste la batalla! Has ganado 20 monedas.");
+                caballero.monedas += 20;
                 volverAMenuMazmorra();
+                actualizarMonedas();
             } else {
                 mostrarMensaje("El dragón atacó al enemigo.");
                 actualizarVidaEnemigo();
@@ -318,7 +350,23 @@ function actualizarVidaCaballero() {
     document.getElementById("vidaCaballero").textContent = caballero.vida;
 
     if (caballero.vida <= 0) {
-        gameOver();
+        Swal.fire({
+            title: "Te has quedado sin vida. Tu caballero suelta la espada al piso, mientras tu dragón sale volando, dejándote atrás. Unas hadas con gorrita te roban el inventario.",
+            width: 600,
+            padding: '3em',
+            color: 'black',
+            background: '#fff',
+            backdrop: `
+                rgba(0,0,123,0.4)
+                url("/images/nyan-cat.gif")
+                left top
+                no-repeat
+            `
+        }).then((result) => {
+            if (result.isConfirmed) {
+                gameOver();
+            }
+        });
     }
 }
 
@@ -337,7 +385,7 @@ function entrenarEnergia() {
         caballero.monedas -= 30;
         caballero.energia += 5;
         actualizarMonedas();
-        mostrarMensaje("Le has pedido al Mago de Toz que te enseñe un truco, saca sus cartas de su riño y te mira fijo. 'En realidad, no soy mago... pero aprendí este truco en la calle...' . Aprendes el truco a medias, aún así obtienes 5 orbes de energía.");
+        mostrarMensaje("Le has pedido al Mago de Toz que te enseñe un truco, te pide 20 monedas y se las das. Saca sus cartas de su riño y te mira fijo. 'En realidad, no soy mago... pero aprendí este truco en la calle...' . Aprendes el truco a medias, aún así obtienes 5 orbes de energía.");
     } else {
         mostrarMensaje("No tienes suficientes monedas para pagarle al Mago de Toz.");
     }
@@ -351,6 +399,8 @@ function usarHabilidad(enemigo) {
         actualizarEnergia();
         if (enemigoActual.vida <= 0) {
             mostrarMensaje("El rayo a pulverizado al enemigo. Has ganado 20 monedas.")
+            caballero.monedas += 20;
+            actualizarMonedas();
             volverAMenuMazmorra();
         } else {
             mostrarMensaje("Tus ojos cambian de color, mientras un aura recorre tu cuerpo. Observás fijo a tu oponente y atacás con un rayo láser. Has gastado 15 orbes de energía.")

@@ -1,0 +1,31 @@
+[
+  {
+    "texto": "La noche es larga e intensa. El frío asecha en las oscuridades del bosque. Tu dragón enciende la fogata con su aliento y duermes con él toda la noche. Pierdes 5 unidades de comida.",
+    "efecto": {
+      "comidaDragon": -5,
+      "vida": 5
+    }
+  },
+  {
+    "texto": "Has tenido un sueño tranquilo. Tu dragón ronca suavemente mientras descansa.",
+    "efecto": {
+      "comidaDragon": -3,
+      "vida": 5
+    }
+  },
+  {
+    "texto": "Unos pequeños elfos asaltan tu campamento, tu dragón sale volando y quedas atrapado dentro de un círculo enemigo. Sacás la espada pero es más fácil patearlos. Tu dragón aparece y simplemente se recuesta sobre ellos. Ganás dos puntos de fuerza.",
+    "efecto": {
+      "fuerza": 2,
+      "comidaDragon": -3,
+      "vida": 5
+    }
+  },
+  {
+    "texto": "La noche pasa sin incidentes. Despiertas sintiéndote renovado y listo para enfrentar un nuevo día.",
+    "efecto": {
+      "comidaDragon": -3,
+      "vida": 5
+    }
+  }
+]
